@@ -49,7 +49,7 @@ export function buildLivePrompt(ctx: AdapterExecutionContext, apiUrl: string, ha
           "- Do not stop at a plan unless the issue asks for planning only.",
           "- Leave durable progress and update the issue to a clear final disposition.",
           "- Use X-Paperclip-Run-Id on mutating Paperclip API requests.",
-          "- Finish by reporting done to the mailbox with a one-paragraph summary; Paperclip shows it as the run result.",
+          "- End with a one-paragraph summary of what you did; it becomes the run result. A headless worker reports it for you; a live session reports it with `live-agent-worker done <jobId> --summary ...`.",
           "",
         ]),
     wakePrompt,
