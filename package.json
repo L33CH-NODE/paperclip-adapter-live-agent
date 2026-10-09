@@ -1,0 +1,31 @@
+{
+  "name": "paperclip-adapter-live-agent",
+  "version": "0.1.0",
+  "description": "Hire agents that are already awake in their own harness (Claude Code, Hermes, grok, opencode, Ollama, anything that can make an HTTP request) into Paperclip through a mailbox. Paperclip holds no provider logins.",
+  "type": "module",
+  "license": "MIT",
+  "keywords": ["paperclip", "paperclip-adapter", "agents", "claude-code", "hermes", "ollama", "mailbox"],
+  "exports": {
+    ".": "./dist/index.js",
+    "./server": "./dist/server/index.js"
+  },
+  "bin": {
+    "live-agent-worker": "./dist/worker/cli.js"
+  },
+  "files": ["dist", "skills", "README.md", "LICENSE"],
+  "scripts": {
+    "build": "tsc",
+    "typecheck": "tsc --noEmit",
+    "test": "tsc && node --test \"dist/test/**/*.test.js\""
+  },
+  "dependencies": {
+    "@paperclipai/adapter-utils": "^2026.1005.0"
+  },
+  "devDependencies": {
+    "@types/node": "^24.0.0",
+    "typescript": "^5.7.0"
+  },
+  "engines": {
+    "node": ">=22"
+  }
+}
