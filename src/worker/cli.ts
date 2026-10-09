@@ -199,10 +199,14 @@ async function runCliJob(mb: MailboxClient, job: Job, driver: CliDriver, args: A
   });
 
   note(`job ${job.jobId} (run ${job.runId}${job.taskId ? `, task ${job.taskId}` : ""}) -> ${command}`);
-  const env: NodeJS.ProcessEnv = { ...process.env, ...job.env };
-  // A worker started from a terminal owned by Claude Code inherits these, and
-  // `claude` then refuses to start ("cannot be launched inside another session").
-  for (const name of ["CLAUDECODE", "CLAUDE_CODE_ENTRYPOINT", "CLAUDE_CODE_SESSION", "CLAUDE_CODE_PARENT_SESSION"]) delete env[name];
+  // A worker started from a terminal owned by Claude Code inherits that session's variables:
+  // nesting markers (`claude` refuses to start, or turns transcripts off) and the session's
+  // messaging token and socket (a driver holding them could act as the parent session).
+  // Drop them all; configuration such as CLAUDE_CONFIG_DIR passes through.
+  const parentSessionVar = /^(CLAUDECODE|CLAUDE_PID|CLAUDE_CODE_(ENTRYPOINT|SESSION(_\w+)?|CHILD_SESSION|PARENT_SESSION|BRIDGE_SESSION_ID|MESSAGING_\w+))$/;
+  const env: NodeJS.ProcessEnv = {};
+  for (const [name, value] of Object.entries(process.env)) if (!parentSessionVar.test(name)) env[name] = value;
+  Object.assign(env, job.env);
   const child = spawnPortable(command, driverArgs, cwd, env);
   let cancelled = false;
   const stop = (cancel: boolean) => {
